@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.abs
@@ -67,11 +68,13 @@ class MainActivity : AppCompatActivity() {
                 outRect.top = 0
             }
         })
-        val snapHelper = LinearSnapHelper()
+        val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(list)//设置居中回弹
         list.adapter = adapter
         list.addOnScrollListener(listener)
         list.scrollToPosition(adapter.size * 500)
+        list.smoothScrollBy(-DisplayUtils.dp2px(this@MainActivity, 2), 0)//解决scrollToPosition偏移问题
+        Log.e(javaClass.name, snapHelper.findSnapView(layoutManager)?.javaClass?.name + "")
     }
 
     /*监听list滑动事件*/
