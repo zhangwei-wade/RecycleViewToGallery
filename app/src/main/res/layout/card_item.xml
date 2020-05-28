@@ -31,7 +31,7 @@
             android:lines="2"
             android:paddingStart="4dp"
             android:paddingEnd="4dp"
-            android:text="测试数据，再等等具体等什么我也不知道，就是想再等等"
+            android:text="再等等具体等什么我也不知道，就是想再等等"
             android:textColor="#2F2F2F"
             android:textSize="8sp" />
 

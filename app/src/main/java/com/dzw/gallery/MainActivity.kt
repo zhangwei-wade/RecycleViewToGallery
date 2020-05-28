@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         snapHelper.attachToRecyclerView(list)//设置居中回弹
         list.adapter = adapter
         list.addOnScrollListener(listener)
-        list.scrollToPosition(1000)
+        list.scrollToPosition(adapter.size * 500)
     }
 
     /*监听list滑动事件*/
