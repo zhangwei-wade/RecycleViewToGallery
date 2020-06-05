@@ -1,4 +1,4 @@
-package com.dzw.gallery
+package com.dzw.gallery.util
 
 import android.content.Context
 

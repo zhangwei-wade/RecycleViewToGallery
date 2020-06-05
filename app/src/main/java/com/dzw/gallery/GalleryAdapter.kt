@@ -25,7 +25,7 @@ class GalleryAdapter : RecyclerView.Adapter<GalleryAdapter.ItemHolder>() {
     }
 
     override fun onBindViewHolder(holder: ItemHolder, position: Int) {
-        holder.title.text = "再等等具体等什么我也不知道，就是想再等等${position % size}"
+        holder.title.text = "再等等具体等什么我也不知道，就是想再等等${position / size}"
     }
 
 

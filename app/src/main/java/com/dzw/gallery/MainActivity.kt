@@ -5,14 +5,16 @@ import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
+import android.widget.AbsListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.dzw.gallery.util.DisplayUtils
+import com.dzw.gallery.util.LooperLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.abs
 import kotlin.properties.Delegates
@@ -68,11 +70,13 @@ class MainActivity : AppCompatActivity() {
                 outRect.top = 0
             }
         })
-        val snapHelper = PagerSnapHelper()
+        val snapHelper =object :PagerSnapHelper(){
+
+        }
         snapHelper.attachToRecyclerView(list)//设置居中回弹
         list.adapter = adapter
         list.addOnScrollListener(listener)
-        list.scrollToPosition(adapter.size * 500)
+        list.scrollToPosition(adapter.size * 1000)
         list.smoothScrollBy(-DisplayUtils.dp2px(this@MainActivity, 2), 0)//解决scrollToPosition偏移问题
         Log.e(javaClass.name, snapHelper.findSnapView(layoutManager)?.javaClass?.name + "")
     }
@@ -81,7 +85,7 @@ class MainActivity : AppCompatActivity() {
     private val listener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
-            onChangeView(recyclerView)
+            onChangeView(list)
         }
     }
 
@@ -94,30 +98,21 @@ class MainActivity : AppCompatActivity() {
             val lp = child.layoutParams as RecyclerView.LayoutParams
             val left: Int = child.left
             val right: Int = mScreenWidth - child.right
-            var percent: Float =
-                if (left < 0 || right < 0) 0f else left.coerceAtMost(right) * 1f / left.coerceAtLeast(
-                    right
-                )
-            Log.e(javaClass.name, "percent = $percent")
-            if (percent > 0.9) {
-                percent = 1.0f
+            var percent: Float = if (left < 0 || right < 0) {
+                0f
+            } else {
+                left.coerceAtMost(right).toFloat() / left.coerceAtLeast(right)
             }
+            Log.e(javaClass.name, "percent = $percent")
+            if (percent > 0.9) percent = 1.0f
             lp.topMargin = (mMaxTopMargin - abs(percent) * (mMaxTopMargin - mMinTopMargin)).toInt()
             lp.width = (mMinWidth + abs(percent) * (mMaxWidth - mMinWidth)).toInt()
             lp.height = (mMinHeight + abs(percent) * (mMaxHeight - mMinHeight)).toInt()
             child.layoutParams = lp
-            child.findViewById<TextView>(R.id.tv_title)
-                .setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX,
-                    mMinTextSize.toFloat() + abs(percent) * (mMaxTextSize.toFloat() - mMinTextSize.toFloat())
-                )
-//            if (percent > 0.5f) {
-//                child.findViewById<TextView>(R.id.tv_title)
-//                    .setTextSize(TypedValue.COMPLEX_UNIT_PX, mMaxTextSize.toFloat())
-//            } else {
-//                child.findViewById<TextView>(R.id.tv_title)
-//                    .setTextSize(TypedValue.COMPLEX_UNIT_PX, mMinTextSize.toFloat())
-//            }
+            val textView = child.findViewById<TextView>(R.id.tv_title)
+            val scale = 1.0f + (mMaxWidth / mMinWidth.toFloat() - 1) * abs(percent)
+            textView.textScaleX = scale
+            textView.scaleY = scale
             if (percent == 1.0f) {
                 child.setOnClickListener {
                     Toast.makeText(this@MainActivity, "被点击了", Toast.LENGTH_SHORT).show()
@@ -125,7 +120,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 child.setOnClickListener {
                     val clickPosition = recyclerView.getChildLayoutPosition(it)
-                    Toast.makeText(this@MainActivity, "$clickPosition", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "$clickPosition", Toast.LENGTH_SHORT)
+                        .show()
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     when (clickPosition) {
                         layoutManager.findFirstCompletelyVisibleItemPosition() -> {
