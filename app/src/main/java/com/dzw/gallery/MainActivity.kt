@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 outRect.top = 0
             }
         })
-        val snapHelper =object :PagerSnapHelper(){
+        val snapHelper = object : PagerSnapHelper() {
 
         }
         snapHelper.attachToRecyclerView(list)//设置居中回弹
@@ -96,24 +96,26 @@ class MainActivity : AppCompatActivity() {
         for (i in 0 until childCount) {
             val child: CardView = recyclerView.getChildAt(i) as CardView
             val lp = child.layoutParams as RecyclerView.LayoutParams
-            val left: Int = child.left
-            val right: Int = mScreenWidth - child.right
-            var percent: Float = if (left < 0 || right < 0) {
+            val left: Int = child.left - DisplayUtils.dp2px(this@MainActivity, 8)
+            val right: Int = mScreenWidth - child.right - DisplayUtils.dp2px(this@MainActivity, 8)
+            val percent: Float = if (left < 0 || right < 0) {
                 0f
             } else {
                 left.coerceAtMost(right).toFloat() / left.coerceAtLeast(right)
             }
             Log.e(javaClass.name, "percent = $percent")
-            if (percent > 0.9) percent = 1.0f
+//            if (percent > 0.9) percent = 1.0f
             lp.topMargin = (mMaxTopMargin - abs(percent) * (mMaxTopMargin - mMinTopMargin)).toInt()
             lp.width = (mMinWidth + abs(percent) * (mMaxWidth - mMinWidth)).toInt()
             lp.height = (mMinHeight + abs(percent) * (mMaxHeight - mMinHeight)).toInt()
             child.layoutParams = lp
             val textView = child.findViewById<TextView>(R.id.tv_title)
-            val scale = 1.0f + (mMaxWidth / mMinWidth.toFloat() - 1) * abs(percent)
-            textView.textScaleX = scale
-            textView.scaleY = scale
-            if (percent == 1.0f) {
+//            val scale = 1.0f + 0.1f * abs(percent)
+//            textView.textScaleX = scale
+//            textView.scaleY = scale
+            val size = mMinTextSize + abs(percent) * (mMaxTextSize - mMinTextSize)
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, size)
+            if (percent > 0.9) {
                 child.setOnClickListener {
                     Toast.makeText(this@MainActivity, "被点击了", Toast.LENGTH_SHORT).show()
                 }
